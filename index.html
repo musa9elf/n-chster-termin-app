@@ -8,7 +8,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Nächster Termin">
   <meta name="theme-color" content="#1a1a1a">
-  <meta name="description" content="Minimalistische Termin-Erinnerungs-App">
   
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
@@ -18,25 +17,16 @@
   <title>Nächster Termin</title>
   
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #0f0f0f;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       min-height: -webkit-fill-available;
-      padding: 0;
-      margin: 0;
     }
-
     .app {
       width: 100%;
       max-width: 430px;
@@ -45,18 +35,10 @@
       background: #1a1a1a;
       display: flex;
       flex-direction: column;
-      position: relative;
     }
-
     @media (min-width: 431px) {
-      .app {
-        border-radius: 44px;
-        height: 92vh;
-        max-height: 900px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-      }
+      .app { border-radius: 44px; height: 92vh; max-height: 900px; }
     }
-
     .main-content {
       flex: 1;
       overflow-y: auto;
@@ -65,35 +47,29 @@
       flex-direction: column;
       gap: 20px;
     }
-
     .header-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-
     .header-title {
-      font-size: 32px;
+      font-size: 30px;
       font-weight: 800;
       color: #ffffff;
     }
-
     .settings-btn {
       background: none;
       border: none;
-      font-size: 24px;
+      font-size: 28px;
       cursor: pointer;
       padding: 8px;
-      border-radius: 50%;
     }
-
     .next-card {
       background: linear-gradient(145deg, #1e1e2e 0%, #1a1a2e 100%);
       border-radius: 24px;
       padding: 24px;
       border: 1px solid rgba(10, 132, 255, 0.2);
     }
-
     .next-badge {
       display: inline-block;
       background: rgba(10, 132, 255, 0.2);
@@ -104,21 +80,18 @@
       border-radius: 20px;
       margin-bottom: 12px;
     }
-
     .next-time {
-      font-size: 40px;
+      font-size: 38px;
       font-weight: 800;
       color: #ffffff;
       margin-bottom: 8px;
     }
-
     .next-title {
       font-size: 20px;
       font-weight: 600;
       color: #e5e5e5;
       margin-bottom: 16px;
     }
-
     .countdown {
       display: inline-flex;
       align-items: center;
@@ -127,23 +100,19 @@
       padding: 10px 18px;
       border-radius: 30px;
       font-weight: 700;
-      font-size: 15px;
       color: #0a84ff;
     }
-
     .section-title {
       font-size: 20px;
       font-weight: 700;
       color: #ffffff;
       margin-bottom: 10px;
     }
-
     .appointment-list {
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
-
     .list-item {
       background: #252525;
       border-radius: 16px;
@@ -153,7 +122,6 @@
       gap: 14px;
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
-
     .list-date-box {
       background: #1a1a1a;
       border-radius: 12px;
@@ -161,35 +129,11 @@
       min-width: 48px;
       text-align: center;
     }
-
-    .list-day {
-      font-weight: 800;
-      font-size: 18px;
-      color: #0a84ff;
-    }
-
-    .list-month {
-      font-size: 10px;
-      font-weight: 600;
-      color: #98989d;
-    }
-
-    .list-info {
-      flex: 1;
-    }
-
-    .list-time {
-      font-weight: 700;
-      font-size: 15px;
-      color: #ffffff;
-    }
-
-    .list-title {
-      font-weight: 500;
-      font-size: 14px;
-      color: #e5e5e5;
-    }
-
+    .list-day { font-weight: 800; font-size: 18px; color: #0a84ff; }
+    .list-month { font-size: 10px; font-weight: 600; color: #98989d; }
+    .list-info { flex: 1; }
+    .list-time { font-weight: 700; font-size: 15px; color: #ffffff; }
+    .list-title { font-weight: 500; font-size: 14px; color: #e5e5e5; }
     .list-delete {
       background: none;
       border: none;
@@ -198,23 +142,18 @@
       padding: 8px;
       cursor: pointer;
     }
-
     .add-button {
       background: #0a84ff;
       border: none;
       border-radius: 30px;
-      padding: 16px 24px;
+      padding: 16px;
       color: white;
       font-weight: 700;
       font-size: 17px;
       cursor: pointer;
       margin-top: auto;
     }
-
-    .add-button:active {
-      background: #0066cc;
-    }
-
+    .add-button:active { background: #0066cc; }
     .bottom-nav {
       display: flex;
       justify-content: space-around;
@@ -222,7 +161,6 @@
       background: #1a1a1a;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
-
     .nav-item {
       display: flex;
       flex-direction: column;
@@ -237,15 +175,8 @@
       padding: 8px 16px;
       border-radius: 20px;
     }
-
-    .nav-item.active {
-      color: #0a84ff;
-    }
-
-    .nav-icon {
-      font-size: 22px;
-    }
-
+    .nav-item.active { color: #0a84ff; }
+    .nav-icon { font-size: 22px; }
     .modal-overlay {
       display: none;
       position: fixed;
@@ -255,11 +186,7 @@
       justify-content: flex-end;
       align-items: flex-end;
     }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
+    .modal-overlay.active { display: flex; }
     .modal-sheet {
       background: #1e1e1e;
       border-radius: 24px 24px 0 0;
@@ -268,15 +195,11 @@
       max-width: 430px;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
       animation: slideUp 0.3s ease;
-      max-height: 85vh;
-      overflow-y: auto;
     }
-
     @keyframes slideUp {
       from { transform: translateY(100%); }
       to { transform: translateY(0); }
     }
-
     .modal-handle {
       width: 36px;
       height: 5px;
@@ -284,7 +207,6 @@
       border-radius: 3px;
       margin: 0 auto 20px;
     }
-
     .modal-title {
       font-size: 22px;
       font-weight: 700;
@@ -292,11 +214,7 @@
       margin-bottom: 20px;
       text-align: center;
     }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
+    .form-group { margin-bottom: 16px; }
     .form-label {
       font-weight: 600;
       font-size: 13px;
@@ -305,7 +223,6 @@
       margin-bottom: 6px;
       text-transform: uppercase;
     }
-
     .form-input {
       width: 100%;
       padding: 14px 16px;
@@ -317,22 +234,11 @@
       -webkit-appearance: none;
       box-sizing: border-box;
     }
-
-    .form-input:focus {
-      outline: none;
-      border-color: #0a84ff;
-    }
-
-    .form-input::placeholder {
-      color: #636366;
-    }
-
-    input[type="date"],
-    input[type="time"] {
+    .form-input:focus { outline: none; border-color: #0a84ff; }
+    input[type="date"], input[type="time"] {
       color-scheme: dark;
       min-height: 48px;
     }
-
     .btn-primary {
       background: #0a84ff;
       border: none;
@@ -345,11 +251,7 @@
       cursor: pointer;
       margin-top: 8px;
     }
-
-    .btn-primary:active {
-      background: #0066cc;
-    }
-
+    .btn-primary:active { background: #0066cc; }
     .btn-secondary {
       background: transparent;
       border: none;
@@ -360,7 +262,6 @@
       font-size: 15px;
       cursor: pointer;
     }
-
     .settings-card {
       background: #252525;
       border-radius: 16px;
@@ -368,36 +269,15 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
       margin-bottom: 12px;
     }
-
     .settings-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-
-    .settings-label {
-      font-weight: 600;
-      color: #ffffff;
-    }
-
-    .settings-desc {
-      font-size: 12px;
-      color: #98989d;
-      margin-top: 4px;
-    }
-
-    .toggle {
-      position: relative;
-      width: 51px;
-      height: 31px;
-    }
-
-    .toggle input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
+    .settings-label { font-weight: 600; color: #ffffff; }
+    .settings-desc { font-size: 12px; color: #98989d; margin-top: 4px; }
+    .toggle { position: relative; width: 51px; height: 31px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
     .toggle-slider {
       position: absolute;
       cursor: pointer;
@@ -406,7 +286,6 @@
       border-radius: 31px;
       transition: 0.3s;
     }
-
     .toggle-slider::before {
       content: "";
       position: absolute;
@@ -418,15 +297,8 @@
       border-radius: 50%;
       transition: 0.3s;
     }
-
-    input:checked + .toggle-slider {
-      background: #0a84ff;
-    }
-
-    input:checked + .toggle-slider::before {
-      transform: translateX(20px);
-    }
-
+    input:checked + .toggle-slider { background: #0a84ff; }
+    input:checked + .toggle-slider::before { transform: translateX(20px); }
     .select-input {
       width: 100%;
       padding: 14px 16px;
@@ -437,11 +309,7 @@
       color: #ffffff;
       margin-top: 8px;
     }
-
-    .hidden {
-      display: none !important;
-    }
-
+    .hidden { display: none !important; }
     .toast {
       position: fixed;
       top: 60px;
@@ -452,12 +320,10 @@
       padding: 12px 24px;
       border-radius: 30px;
       font-weight: 600;
-      font-size: 14px;
       z-index: 200;
       animation: toastIn 2s ease;
       white-space: nowrap;
     }
-
     @keyframes toastIn {
       0% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
       15% { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -467,109 +333,64 @@
   </style>
 </head>
 <body>
-<div class="app" id="app">
-  
-  <!-- Termine View -->
+<div class="app">
+
   <div class="main-content" id="termineView">
     <div class="header-row">
       <h1 class="header-title">Nächster Termin</h1>
       <button class="settings-btn" id="openSettings">⚙️</button>
     </div>
-
     <div class="next-card" id="nextCard"></div>
-
     <div>
       <h2 class="section-title">Meine Termine</h2>
       <div class="appointment-list" id="appointmentList"></div>
     </div>
-
     <button class="add-button" id="openAddModal">＋ Termin hinzufügen</button>
   </div>
 
-  <!-- Einstellungen View -->
   <div class="main-content hidden" id="settingsView">
     <div class="header-row">
       <h1 class="header-title">Einstellungen</h1>
       <button class="settings-btn" id="closeSettings">✕</button>
     </div>
-
     <div class="settings-card">
       <div class="settings-row">
-        <div>
-          <div class="settings-label">🔔 Benachrichtigungen</div>
-          <div class="settings-desc">Erinnerungen vor Terminen</div>
-        </div>
-        <label class="toggle">
-          <input type="checkbox" id="notificationsToggle" checked>
-          <span class="toggle-slider"></span>
-        </label>
+        <div><div class="settings-label">🔔 Benachrichtigungen</div><div class="settings-desc">Erinnerungen vor Terminen</div></div>
+        <label class="toggle"><input type="checkbox" id="notificationsToggle" checked><span class="toggle-slider"></span></label>
       </div>
     </div>
-
     <div class="settings-card">
       <div class="settings-label">⏰ Erinnerungszeit</div>
       <select class="select-input" id="reminderTimeSelect">
         <option value="24">24 Stunden vorher</option>
         <option value="12">12 Stunden vorher</option>
         <option value="6">6 Stunden vorher</option>
-        <option value="3">3 Stunden vorher</option>
         <option value="1">1 Stunde vorher</option>
-        <option value="0.5">30 Minuten vorher</option>
+        <option value="0.016">1 Minute vorher (Test)</option>
       </select>
-      <div class="settings-desc" style="margin-top:8px;">Standard: 24 Stunden vor dem Termin</div>
     </div>
-
-    <div class="settings-card">
-      <div class="settings-label">📱 App-Info</div>
-      <div class="settings-desc">Version 2.0 • Nächster Termin</div>
-      <div class="settings-desc">🔔 Sperrbildschirm-Benachrichtigungen</div>
-      <div class="settings-desc">💾 Lokale Speicherung</div>
-    </div>
+    <button class="btn-primary" id="testNotification">🔔 Test-Benachrichtigung senden</button>
+    <button class="btn-primary" id="requestPermission" style="margin-top:8px;background:#252525;">📱 Benachrichtigung erlauben</button>
   </div>
 
-  <!-- Modal Termin hinzufügen -->
   <div class="modal-overlay" id="addModal">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
       <h2 class="modal-title">Neuer Termin</h2>
-      
-      <div class="form-group">
-        <label class="form-label">Titel</label>
-        <input class="form-input" type="text" id="titleInput" placeholder="z.B. Zahnarzt" maxlength="50">
-      </div>
-      
-      <div class="form-group">
-        <label class="form-label">Datum</label>
-        <input class="form-input" type="date" id="dateInput">
-      </div>
-      
-      <div class="form-group">
-        <label class="form-label">Uhrzeit</label>
-        <input class="form-input" type="time" id="timeInput">
-      </div>
-      
+      <div class="form-group"><label class="form-label">Titel</label><input class="form-input" type="text" id="titleInput" placeholder="z.B. Zahnarzt" maxlength="50"></div>
+      <div class="form-group"><label class="form-label">Datum</label><input class="form-input" type="date" id="dateInput"></div>
+      <div class="form-group"><label class="form-label">Uhrzeit</label><input class="form-input" type="time" id="timeInput"></div>
       <button class="btn-primary" id="saveBtn">Speichern</button>
       <button class="btn-secondary" id="closeModal">Abbrechen</button>
     </div>
   </div>
 
-  <!-- Toast Container -->
   <div id="toastContainer"></div>
 
-  <!-- Navigation -->
   <nav class="bottom-nav">
-    <button class="nav-item active" id="navTermine">
-      <span class="nav-icon">📅</span>
-      <span>Termine</span>
-    </button>
-    <button class="nav-item" id="navNeu">
-      <span class="nav-icon">➕</span>
-      <span>Neu</span>
-    </button>
-    <button class="nav-item" id="navSettings">
-      <span class="nav-icon">⚙️</span>
-      <span>Einstellungen</span>
-    </button>
+    <button class="nav-item active" id="navTermine"><span class="nav-icon">📅</span><span>Termine</span></button>
+    <button class="nav-item" id="navNeu"><span class="nav-icon">➕</span><span>Neu</span></button>
+    <button class="nav-item" id="navSettings"><span class="nav-icon">⚙️</span><span>Einstellungen</span></button>
   </nav>
 </div>
 
@@ -577,14 +398,11 @@
 (function() {
   'use strict';
   
-  console.log('🚀 App startet...');
-
-  // ============ DATEN ============
   let appointments = [];
   let reminderTimeouts = [];
-  const STORAGE_KEY = 'termine_app_v2';
+  const STORAGE_KEY = 'termine_v3';
 
-  // ============ DOM ELEMENTE ============
+  // DOM
   const termineView = document.getElementById('termineView');
   const settingsView = document.getElementById('settingsView');
   const nextCard = document.getElementById('nextCard');
@@ -597,338 +415,206 @@
   const notificationsToggle = document.getElementById('notificationsToggle');
   const reminderTimeSelect = document.getElementById('reminderTimeSelect');
 
-  // ============ HILFSFUNKTIONEN ============
-  function parseDateTime(dateStr, timeStr) {
-    if (!dateStr || !timeStr) return null;
-    const [h, m] = timeStr.split(':').map(Number);
-    const d = new Date(dateStr + 'T00:00:00');
-    d.setHours(h, m, 0, 0);
-    return d;
+  // Hilfsfunktionen
+  function parseDateTime(d, t) {
+    if(!d||!t) return null;
+    const [h,m] = t.split(':').map(Number);
+    const dt = new Date(d+'T00:00:00');
+    dt.setHours(h,m,0,0);
+    return dt;
   }
-
-  function formatDateShort(date) {
+  function fmtDate(date) {
     const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const target = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const diff = Math.round((target - today) / 86400000);
-    if (diff === 0) return 'Heute';
-    if (diff === 1) return 'Morgen';
-    if (diff === -1) return 'Gestern';
+    const today = new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    const target = new Date(date.getFullYear(),date.getMonth(),date.getDate());
+    const diff = Math.round((target-today)/86400000);
+    if(diff===0) return 'Heute';
+    if(diff===1) return 'Morgen';
     return ['So','Mo','Di','Mi','Do','Fr','Sa'][target.getDay()];
   }
-
-  function formatTime(date) {
-    return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-  }
-
-  function getMonthShort(date) {
-    return ['JAN','FEB','MÄR','APR','MAI','JUN','JUL','AUG','SEP','OKT','NOV','DEZ'][date.getMonth()];
-  }
-
-  function getCountdown(date) {
+  function fmtTime(date) { return date.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}); }
+  function fmtMonth(date) { return ['JAN','FEB','MÄR','APR','MAI','JUN','JUL','AUG','SEP','OKT','NOV','DEZ'][date.getMonth()]; }
+  function countdown(date) {
     const diff = date - new Date();
-    if (diff <= 0) return 'Jetzt';
-    const hours = Math.floor(diff / 3600000);
-    const mins = Math.floor((diff % 3600000) / 60000);
-    if (hours >= 24) return `Noch ${Math.floor(hours/24)} Tage`;
-    if (hours > 0) return `Noch ${hours} Std. ${mins} Min.`;
-    return `Noch ${mins} Min.`;
+    if(diff<=0) return 'Jetzt';
+    const h = Math.floor(diff/3600000);
+    const m = Math.floor((diff%3600000)/60000);
+    if(h>=24) return `Noch ${Math.floor(h/24)} Tage`;
+    if(h>0) return `Noch ${h} Std. ${m} Min.`;
+    return `Noch ${m} Min.`;
   }
+  function esc(t) { const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
 
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  // ============ BENACHRICHTIGUNGEN ============
-  function requestNotificationPermission() {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission().then(perm => {
-        console.log('🔔 Benachrichtigung:', perm);
-        if (perm === 'granted') {
-          showToast('🔔 Benachrichtigungen aktiv');
-        }
-      });
-    }
-  }
-
-  function sendNotification(appointment) {
-    if (!notificationsToggle.checked) return;
-    if ('Notification' in window && Notification.permission === 'granted') {
-      const notification = new Notification('🔔 Nächster Termin', {
-        body: `${formatDateShort(appointment.dateObj)} · ${formatTime(appointment.dateObj)} Uhr\n${appointment.title}`,
+  // Benachrichtigung
+  function notify(appointment) {
+    if(!notificationsToggle.checked) return;
+    if('Notification' in window && Notification.permission==='granted') {
+      new Notification('🔔 Nächster Termin', {
+        body: `${fmtDate(appointment.dateObj)} · ${fmtTime(appointment.dateObj)} Uhr - ${appointment.title}`,
         icon: 'icon-192.png',
-        badge: 'icon-192.png',
         tag: appointment.id,
-        requireInteraction: true,
-        vibrate: [200, 100, 200],
-        silent: false
+        requireInteraction: true
       });
-      
-      notification.onclick = function() {
-        window.focus();
-        this.close();
-      };
-      
-      console.log('✅ Benachrichtigung gesendet:', appointment.title);
+      console.log('✅ Benachrichtigung gesendet');
     }
   }
 
-  function scheduleReminder(appointment) {
-    clearReminder(appointment.id);
+  function schedule(appointment) {
+    const entry = reminderTimeouts.find(r=>r.id===appointment.id);
+    if(entry) clearTimeout(entry.timeoutId);
+    reminderTimeouts = reminderTimeouts.filter(r=>r.id!==appointment.id);
     
-    if (!notificationsToggle.checked) return;
-    
-    const reminderHours = parseFloat(reminderTimeSelect.value);
-    const reminderTime = new Date(appointment.dateObj.getTime() - reminderHours * 3600000);
-    const now = new Date();
-    const delay = reminderTime - now;
-    
-    if (delay > 0) {
-      const timeoutId = setTimeout(() => {
-        sendNotification(appointment);
-      }, delay);
-      
-      reminderTimeouts.push({ id: appointment.id, timeoutId });
-      console.log(`⏰ Erinnerung geplant: ${appointment.title} in ${Math.round(delay/3600000)} Stunden`);
+    if(!notificationsToggle.checked) return;
+    const hours = parseFloat(reminderTimeSelect.value);
+    const remindAt = new Date(appointment.dateObj.getTime() - hours*3600000);
+    const delay = remindAt - new Date();
+    if(delay>0) {
+      const tid = setTimeout(()=>notify(appointment), delay);
+      reminderTimeouts.push({id:appointment.id, timeoutId:tid});
+      console.log(`⏰ Erinnerung in ${Math.round(delay/60000)} Min`);
     }
   }
 
-  function clearReminder(id) {
-    const entry = reminderTimeouts.find(r => r.id === id);
-    if (entry) {
-      clearTimeout(entry.timeoutId);
-      reminderTimeouts = reminderTimeouts.filter(r => r.id !== id);
-    }
-  }
-
-  function scheduleAllReminders() {
-    reminderTimeouts.forEach(r => clearTimeout(r.timeoutId));
-    reminderTimeouts = [];
-    appointments.forEach(a => {
-      if (a.dateObj > new Date()) scheduleReminder(a);
-    });
-  }
-
-  // ============ SPEICHERN ============
-  function saveData() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(appointments.map(a => ({
-      id: a.id,
-      title: a.title,
-      dateStr: a.dateStr,
-      timeStr: a.timeStr,
-      dateObj: a.dateObj.toISOString()
+  // Speicher
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appointments.map(a=>({
+      id:a.id, title:a.title, dateStr:a.dateStr, timeStr:a.timeStr, dateObj:a.dateObj.toISOString()
     }))));
   }
-
-  function loadData() {
+  function load() {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
+    if(raw) {
       try {
-        appointments = JSON.parse(raw).map(d => ({
-          id: d.id,
-          title: d.title,
-          dateStr: d.dateStr,
-          timeStr: d.timeStr,
-          dateObj: new Date(d.dateObj)
+        appointments = JSON.parse(raw).map(d=>({
+          id:d.id, title:d.title, dateStr:d.dateStr, timeStr:d.timeStr, dateObj:new Date(d.dateObj)
         }));
-      } catch(e) {
-        appointments = [];
-      }
+      } catch(e) { appointments = []; }
     }
-    
-    if (appointments.length === 0) {
+    if(appointments.length===0) {
       const now = new Date();
       const today = now.toISOString().split('T')[0];
-      const tomorrow = new Date(now.getTime() + 86400000).toISOString().split('T')[0];
-      
+      const tomorrow = new Date(now.getTime()+86400000).toISOString().split('T')[0];
       appointments = [
-        { id: 'demo1', title: 'Zahnarzt', dateStr: today, timeStr: '15:00', dateObj: parseDateTime(today, '15:00') },
-        { id: 'demo2', title: 'Meeting', dateStr: tomorrow, timeStr: '09:30', dateObj: parseDateTime(tomorrow, '09:30') }
-      ].filter(a => a.dateObj && a.dateObj > new Date());
+        {id:'1',title:'Zahnarzt',dateStr:today,timeStr:'15:00',dateObj:parseDateTime(today,'15:00')},
+        {id:'2',title:'Meeting',dateStr:tomorrow,timeStr:'09:30',dateObj:parseDateTime(tomorrow,'09:30')}
+      ].filter(a=>a.dateObj&&a.dateObj>new Date());
     }
-    
-    appointments.sort((a, b) => a.dateObj - b.dateObj);
-    saveData();
+    appointments.sort((a,b)=>a.dateObj-b.dateObj);
+    save();
   }
 
-  function loadSettings() {
-    const notif = localStorage.getItem('nt_notif_v2');
-    if (notif !== null) notificationsToggle.checked = (notif === 'true');
-    const remTime = localStorage.getItem('nt_reminder_v2');
-    if (remTime) reminderTimeSelect.value = remTime;
-  }
-
-  function saveSettings() {
-    localStorage.setItem('nt_notif_v2', notificationsToggle.checked);
-    localStorage.setItem('nt_reminder_v2', reminderTimeSelect.value);
-  }
-
-  // ============ UI RENDERN ============
-  function renderNextCard() {
-    const upcoming = appointments.filter(a => a.dateObj > new Date());
+  // UI
+  function renderNext() {
+    const upcoming = appointments.filter(a=>a.dateObj>new Date());
     const next = upcoming[0];
-    
-    if (next) {
-      nextCard.innerHTML = `
-        <span class="next-badge">📌 ${formatDateShort(next.dateObj)}</span>
-        <div class="next-time">${formatTime(next.dateObj)}</div>
-        <div class="next-title">${escapeHtml(next.title)}</div>
-        <div class="countdown">⏱ ${getCountdown(next.dateObj)}</div>
-      `;
+    if(next) {
+      nextCard.innerHTML = `<span class="next-badge">📌 ${fmtDate(next.dateObj)}</span><div class="next-time">${fmtTime(next.dateObj)}</div><div class="next-title">${esc(next.title)}</div><div class="countdown">⏱ ${countdown(next.dateObj)}</div>`;
     } else {
-      nextCard.innerHTML = `<p style="color:#98989d;text-align:center;padding:20px;">Keine bevorstehenden Termine</p>`;
+      nextCard.innerHTML = '<p style="color:#98989d;text-align:center;padding:20px;">Keine bevorstehenden Termine</p>';
     }
   }
-
   function renderList() {
-    const upcoming = appointments.filter(a => a.dateObj > new Date());
-    
-    if (upcoming.length === 0) {
-      appointmentList.innerHTML = '<p style="color:#98989d;text-align:center;padding:20px;">Keine anstehenden Termine</p>';
+    const upcoming = appointments.filter(a=>a.dateObj>new Date());
+    if(upcoming.length===0) {
+      appointmentList.innerHTML = '<p style="color:#98989d;text-align:center;padding:20px;">Keine Termine</p>';
       return;
     }
-    
-    appointmentList.innerHTML = upcoming.map(a => `
+    appointmentList.innerHTML = upcoming.map(a=>`
       <div class="list-item">
-        <div class="list-date-box">
-          <div class="list-day">${a.dateObj.getDate()}</div>
-          <div class="list-month">${getMonthShort(a.dateObj)}</div>
-        </div>
-        <div class="list-info">
-          <div class="list-time">${formatTime(a.dateObj)}</div>
-          <div class="list-title">${escapeHtml(a.title)}</div>
-        </div>
+        <div class="list-date-box"><div class="list-day">${a.dateObj.getDate()}</div><div class="list-month">${fmtMonth(a.dateObj)}</div></div>
+        <div class="list-info"><div class="list-time">${fmtTime(a.dateObj)}</div><div class="list-title">${esc(a.title)}</div></div>
         <button class="list-delete" data-id="${a.id}">🗑️</button>
-      </div>
-    `).join('');
-    
-    document.querySelectorAll('.list-delete').forEach(btn => {
-      btn.addEventListener('click', function(e) {
+      </div>`).join('');
+    document.querySelectorAll('.list-delete').forEach(b=>{
+      b.addEventListener('click', function(e){
         e.stopPropagation();
-        if (confirm('Termin löschen?')) {
-          const id = this.dataset.id;
-          appointments = appointments.filter(a => a.id !== id);
-          saveData();
-          refreshUI();
-          clearReminder(id);
-          showToast('🗑️ Gelöscht');
+        if(confirm('Löschen?')) {
+          appointments = appointments.filter(a=>a.id!==this.dataset.id);
+          save(); refreshUI(); showToast('🗑️ Gelöscht');
         }
       });
     });
   }
-
-  function refreshUI() {
-    renderNextCard();
-    renderList();
+  function refreshUI() { renderNext(); renderList(); }
+  function showToast(m) {
+    const t = document.createElement('div'); t.className='toast'; t.textContent=m;
+    toastContainer.appendChild(t); setTimeout(()=>t.remove(),2000);
   }
 
-  function showToast(msg) {
-    const t = document.createElement('div');
-    t.className = 'toast';
-    t.textContent = msg;
-    toastContainer.appendChild(t);
-    setTimeout(() => t.remove(), 2000);
-  }
-
-  // ============ MODAL ============
+  // Modal
   function openModal() {
     const now = new Date();
     dateInput.value = now.toISOString().split('T')[0];
-    timeInput.value = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    timeInput.value = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
     titleInput.value = '';
     addModal.classList.add('active');
   }
-
-  function closeModal() {
-    addModal.classList.remove('active');
-  }
-
-  function addAppointment() {
+  function closeModal() { addModal.classList.remove('active'); }
+  function addAppt() {
     const title = titleInput.value.trim();
-    const dateStr = dateInput.value;
-    const timeStr = timeInput.value;
-    
-    if (!title) { showToast('⚠️ Titel eingeben'); return; }
-    if (!dateStr) { showToast('⚠️ Datum wählen'); return; }
-    if (!timeStr) { showToast('⚠️ Uhrzeit wählen'); return; }
-    
-    const dateObj = parseDateTime(dateStr, timeStr);
-    if (!dateObj || dateObj <= new Date()) {
-      showToast('⚠️ Termin in Vergangenheit');
-      return;
-    }
-    
-    const newApp = {
-      id: Date.now().toString(),
-      title, dateStr, timeStr, dateObj
-    };
-    
-    appointments.push(newApp);
-    appointments.sort((a, b) => a.dateObj - b.dateObj);
-    saveData();
-    refreshUI();
-    closeModal();
-    scheduleReminder(newApp);
-    showToast('✅ Gespeichert');
+    const ds = dateInput.value;
+    const ts = timeInput.value;
+    if(!title) { showToast('⚠️ Titel fehlt'); return; }
+    if(!ds||!ts) { showToast('⚠️ Datum/Zeit fehlt'); return; }
+    const dt = parseDateTime(ds,ts);
+    if(!dt||dt<=new Date()) { showToast('⚠️ Vergangenheit'); return; }
+    const a = { id:Date.now().toString(), title, dateStr:ds, timeStr:ts, dateObj:dt };
+    appointments.push(a);
+    appointments.sort((a,b)=>a.dateObj-b.dateObj);
+    save(); refreshUI(); closeModal(); schedule(a); showToast('✅ Gespeichert');
   }
 
-  // ============ NAVIGATION ============
-  function showTermine() {
-    termineView.classList.remove('hidden');
-    settingsView.classList.add('hidden');
-    document.getElementById('navTermine').classList.add('active');
-    document.getElementById('navSettings').classList.remove('active');
-  }
+  // Navigation
+  function showTermine() { termineView.classList.remove('hidden'); settingsView.classList.add('hidden'); }
+  function showSettings() { termineView.classList.add('hidden'); settingsView.classList.remove('hidden'); }
 
-  function showSettings() {
-    termineView.classList.add('hidden');
-    settingsView.classList.remove('hidden');
-    document.getElementById('navTermine').classList.remove('active');
-    document.getElementById('navSettings').classList.add('active');
-  }
-
-  // ============ EVENT LISTENER ============
+  // Events
   document.getElementById('openAddModal').addEventListener('click', openModal);
   document.getElementById('navNeu').addEventListener('click', openModal);
-  document.getElementById('saveBtn').addEventListener('click', addAppointment);
+  document.getElementById('saveBtn').addEventListener('click', addAppt);
   document.getElementById('closeModal').addEventListener('click', closeModal);
   document.getElementById('navTermine').addEventListener('click', showTermine);
-  
   document.getElementById('openSettings').addEventListener('click', showSettings);
   document.getElementById('closeSettings').addEventListener('click', showTermine);
   document.getElementById('navSettings').addEventListener('click', showSettings);
   
-  addModal.addEventListener('click', function(e) {
-    if (e.target === addModal) closeModal();
-  });
-  
-  notificationsToggle.addEventListener('change', function() {
-    saveSettings();
-    scheduleAllReminders();
-  });
-  
-  reminderTimeSelect.addEventListener('change', function() {
-    saveSettings();
-    scheduleAllReminders();
+  addModal.addEventListener('click', function(e) { if(e.target===addModal) closeModal(); });
+
+  // Test-Button
+  document.getElementById('testNotification').addEventListener('click', function() {
+    if('Notification' in window && Notification.permission==='granted') {
+      new Notification('🧪 Test-Benachrichtigung', {
+        body: 'Wenn du das siehst, funktionieren Benachrichtigungen!',
+        icon: 'icon-192.png',
+        requireInteraction: true
+      });
+      showToast('✅ Benachrichtigung gesendet');
+    } else {
+      showToast('❌ Bitte erst erlauben');
+      Notification.requestPermission();
+    }
   });
 
-  // ============ START ============
-  loadData();
-  loadSettings();
+  document.getElementById('requestPermission').addEventListener('click', function() {
+    Notification.requestPermission().then(p => {
+      showToast(p==='granted'?'✅ Erlaubt':'❌ '+p);
+    });
+  });
+
+  // Start
+  load();
   refreshUI();
-  scheduleAllReminders();
-  requestNotificationPermission();
   
-  // Countdown alle 60 Sekunden aktualisieren
-  setInterval(() => {
-    renderNextCard();
-  }, 60000);
+  // Benachrichtigung anfordern
+  if('Notification' in window && Notification.permission==='default') {
+    setTimeout(()=>Notification.requestPermission(), 1000);
+  }
+
+  // Countdown aktualisieren
+  setInterval(renderNext, 60000);
   
-  console.log('🎉 App bereit mit Benachrichtigungen!');
-  console.log('🔔 Berechtigung:', Notification.permission);
-  console.log('📅 Termine:', appointments.length);
+  console.log('✅ App bereit');
+  console.log('🔔 Permission:', Notification.permission);
 })();
 </script>
 </body>
