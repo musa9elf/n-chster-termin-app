@@ -1,0 +1,1240 @@
+Um eine App in den App Store hochzuladen, brauchst du mehr als nur HTML – du benötigst eine native iOS-App oder eine PWA, die Apple akzeptiert. Hier ist die komplett fertige Lösung als PWA (Progressive Web App), die du mit einem Wrapper für den App Store einreichen kannst.
+
+---
+
+📱 Komplette PWA – Bereit für App Store Einreichung
+
+```html
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  
+  <!-- PWA Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nächster Termin">
+  <meta name="theme-color" content="#1a1a1a">
+  <meta name="description" content="Minimalistische Termin-Erinnerungs-App">
+  
+  <!-- App Icons -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231a1a1a'/><text x='50' y='65' font-size='55' text-anchor='middle' fill='%230a84ff'>📅</text></svg>">
+  <link rel="manifest" href="data:application/json,{'name':'N%C3%A4chster%20Termin','short_name':'Termine','start_url':'.','display':'standalone','background_color':'%231a1a1a','theme_color':'%231a1a1a','icons':[{'src':'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%231a1a1a%22/><text x=%2250%22 y=%2265%22 font-size=%2255%22 text-anchor=%22middle%22 fill=%22%230a84ff%22>📅</text></svg>','sizes':'100x100','type':'image/svg+xml'}]}">
+  
+  <title>Nächster Termin</title>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    :root {
+      --bg-primary: #1a1a1a;
+      --bg-card: #252525;
+      --bg-input: #1e1e1e;
+      --text-primary: #ffffff;
+      --text-secondary: #e5e5e5;
+      --text-tertiary: #98989d;
+      --accent: #0a84ff;
+      --accent-dark: #0066cc;
+      --danger: #ff453a;
+      --border: rgba(255, 255, 255, 0.08);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --radius-lg: 28px;
+      --radius-md: 18px;
+      --radius-sm: 12px;
+      --safe-bottom: env(safe-area-inset-bottom, 20px);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+      background: #0f0f0f;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 430px;
+      height: 100vh;
+      height: -webkit-fill-available;
+      background: var(--bg-primary);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.5);
+    }
+
+    @media (min-width: 431px) {
+      .app {
+        border-radius: 44px;
+        height: 92vh;
+        max-height: 900px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+    }
+
+    /* Status Bar Spacer */
+    .status-bar {
+      height: env(safe-area-inset-top, 20px);
+      background: var(--bg-primary);
+      flex-shrink: 0;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .main-content::-webkit-scrollbar {
+      width: 0;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-title {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+    }
+
+    .header-date {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      font-weight: 500;
+    }
+
+    /* Next Appointment Card */
+    .next-card {
+      background: linear-gradient(145deg, #1e1e2e 0%, #1a1a2e 100%);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      border: 1px solid rgba(10, 132, 255, 0.2);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .next-card::before {
+      content: '';
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, rgba(10, 132, 255, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .next-badge {
+      display: inline-block;
+      background: rgba(10, 132, 255, 0.2);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .next-time {
+      font-size: 40px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      letter-spacing: -1px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .next-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      word-break: break-word;
+    }
+
+    .countdown {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(10, 132, 255, 0.12);
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--accent);
+    }
+
+    .countdown-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 30px 20px;
+    }
+
+    .empty-icon {
+      font-size: 60px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .empty-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .empty-subtitle {
+      font-size: 15px;
+      color: var(--text-tertiary);
+      font-weight: 500;
+    }
+
+    /* Section */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .section-count {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    /* Appointment List */
+    .appointment-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .list-item {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border: 1px solid var(--border);
+      transition: all 0.2s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .list-item:active {
+      transform: scale(0.98);
+      background: #2a2a2a;
+    }
+
+    .list-date-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-primary);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      min-width: 48px;
+      border: 1px solid var(--border);
+    }
+
+    .list-day {
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .list-month {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .list-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .list-time {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .list-title {
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .list-actions {
+      display: flex;
+      gap: 4px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .list-item:hover .list-actions,
+    .list-item:active .list-actions {
+      opacity: 1;
+    }
+
+    .list-btn {
+      background: none;
+      border: none;
+      font-size: 18px;
+      padding: 8px;
+      cursor: pointer;
+      border-radius: 50%;
+      transition: 0.2s;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .list-btn.delete {
+      color: var(--danger);
+    }
+
+    .list-btn.delete:active {
+      background: rgba(255, 69, 58, 0.15);
+    }
+
+    /* Add Button */
+    .add-button {
+      background: var(--accent);
+      border: none;
+      border-radius: 30px;
+      padding: 16px 24px;
+      color: white;
+      font-weight: 700;
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(10, 132, 255, 0.35);
+      transition: all 0.2s;
+      margin-top: auto;
+      flex-shrink: 0;
+    }
+
+    .add-button:active {
+      background: var(--accent-dark);
+      transform: scale(0.97);
+      box-shadow: 0 4px 12px rgba(10, 132, 255, 0.25);
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 8px 16px calc(8px + var(--safe-bottom));
+      background: var(--bg-primary);
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+      padding: 8px 16px;
+      border-radius: 20px;
+      position: relative;
+    }
+
+    .nav-item.active {
+      color: var(--accent);
+    }
+
+    .nav-item.active::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      width: 20px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .nav-icon {
+      font-size: 22px;
+      transition: 0.2s;
+    }
+
+    .nav-item:active .nav-icon {
+      transform: scale(1.1);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      justify-content: flex-end;
+      align-items: flex-end;
+      z-index: 100;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-sheet {
+      background: #1e1e1e;
+      border-radius: 24px 24px 0 0;
+      padding: 24px 20px calc(24px + var(--safe-bottom));
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+      border-top: 1px solid var(--border);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-handle {
+      width: 36px;
+      height: 5px;
+      background: #3a3a3c;
+      border-radius: 3px;
+      margin: 0 auto 20px;
+    }
+
+    .modal-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-tertiary);
+      display: block;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 16px;
+      background: var(--bg-input);
+      color: var(--text-primary);
+      transition: 0.2s;
+      -webkit-appearance: none;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.15);
+    }
+
+    .form-input::placeholder {
+      color: #636366;
+    }
+
+    input[type="date"],
+    input[type="time"] {
+      color-scheme: dark;
+      min-height: 48px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border: none;
+      color: white;
+      font-weight: 700;
+      padding: 16px;
+      border-radius: 30px;
+      width: 100%;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: 0.2s;
+    }
+
+    .btn-primary:active {
+      background: var(--accent-dark);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: none;
+      color: var(--text-tertiary);
+      font-weight: 600;
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    /* Settings */
+    .settings-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .settings-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .settings-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .settings-label {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 15px;
+    }
+
+    .settings-desc {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 4px;
+    }
+
+    /* Toggle */
+    .toggle {
+      position: relative;
+      width: 51px;
+      height: 31px;
+      flex-shrink: 0;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: #3a3a3c;
+      transition: 0.3s;
+      border-radius: 31px;
+    }
+
+    .toggle-slider::before {
+      content: "";
+      position: absolute;
+      height: 27px;
+      width: 27px;
+      left: 2px;
+      bottom: 2px;
+      background: white;
+      transition: 0.3s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    input:checked + .toggle-slider {
+      background: var(--accent);
+    }
+
+    input:checked + .toggle-slider::before {
+      transform: translateX(20px);
+    }
+
+    .select-wrapper {
+      position: relative;
+    }
+
+    .select-wrapper select {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-input);
+      color: var(--text-primary);
+      font-size: 16px;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .select-wrapper::after {
+      content: '▼';
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-tertiary);
+      font-size: 10px;
+      pointer-events: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Toast */
+    .toast {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2a2a2a;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 14px;
+      z-index: 200;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      animation: fadeInOut 2s ease;
+      pointer-events: none;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+      15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="status-bar"></div>
+
+  <!-- Hauptansicht -->
+  <div class="main-content" id="homeView">
+    <div class="header">
+      <h1 class="header-title">Nächster Termin</h1>
+      <span class="header-date" id="currentDate"></span>
+    </div>
+
+    <div class="next-card" id="nextCard"></div>
+
+    <div>
+      <div class="section-header">
+        <h2 class="section-title">Meine Termine</h2>
+        <span class="section-count" id="appointmentCount">0</span>
+      </div>
+      <div class="appointment-list" id="appointmentList"></div>
+    </div>
+
+    <button class="add-button" id="openAddModal">
+      <span>＋</span> Termin hinzufügen
+    </button>
+  </div>
+
+  <!-- Einstellungen -->
+  <div class="main-content hidden" id="settingsView">
+    <div class="header">
+      <h1 class="header-title">Einstellungen</h1>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-card">
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">Benachrichtigungen</div>
+            <div class="settings-desc">Erinnerungen vor Terminen</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="notificationsToggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <div class="settings-label" style="margin-bottom: 10px;">Erinnerungszeit</div>
+        <div class="select-wrapper">
+          <select id="reminderTimeSelect">
+            <option value="24">24 Stunden vorher</option>
+            <option value="12">12 Stunden vorher</option>
+            <option value="6">6 Stunden vorher</option>
+            <option value="3">3 Stunden vorher</option>
+            <option value="1">1 Stunde vorher</option>
+            <option value="0.5">30 Minuten vorher</option>
+          </select>
+        </div>
+        <div class="settings-desc" style="margin-top: 8px;">Standard: 24 Stunden vor dem Termin</div>
+      </div>
+
+      <div class="settings-card">
+        <div class="settings-label">Über die App</div>
+        <div class="settings-desc">Version 1.0 • Nächster Termin</div>
+        <div class="settings-desc">Minimalistische Termin-Erinnerung</div>
+        <div class="settings-desc" style="margin-top: 8px;">🔔 Lokale Benachrichtigungen</div>
+        <div class="settings-desc">📱 Optimiert für iOS</div>
+        <div class="settings-desc">🌙 Dunkelmodus</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal (Bottom Sheet) -->
+  <div class="modal-overlay" id="addModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <h2 class="modal-title">Neuer Termin</h2>
+      
+      <div class="form-group">
+        <label class="form-label">Titel / Notiz</label>
+        <input class="form-input" type="text" id="titleInput" placeholder="z.B. Zahnarzt" autocomplete="off" maxlength="50">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Datum</label>
+        <input class="form-input" type="date" id="dateInput">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Uhrzeit</label>
+        <input class="form-input" type="time" id="timeInput">
+      </div>
+      
+      <button class="btn-primary" id="saveBtn">Speichern</button>
+      <button class="btn-secondary" id="closeModal">Abbrechen</button>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer"></div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-view="home">
+      <span class="nav-icon">📅</span>
+      <span>Termine</span>
+    </button>
+    <button class="nav-item" data-view="add">
+      <span class="nav-icon">➕</span>
+      <span>Neu</span>
+    </button>
+    <button class="nav-item" data-view="settings">
+      <span class="nav-icon">⚙️</span>
+      <span>Einstellungen</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ============ APP STATE ============
+  let appointments = [];
+  const STORAGE_KEY = 'nextTerminApp_v3';
+  let reminderTimeouts = [];
+
+  // ============ DOM ELEMENTS ============
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => document.querySelectorAll(sel);
+
+  const homeView = $('#homeView');
+  const settingsView = $('#settingsView');
+  const nextCard = $('#nextCard');
+  const appointmentList = $('#appointmentList');
+  const appointmentCount = $('#appointmentCount');
+  const addModal = $('#addModal');
+  const titleInput = $('#titleInput');
+  const dateInput = $('#dateInput');
+  const timeInput = $('#timeInput');
+  const saveBtn = $('#saveBtn');
+  const currentDateEl = $('#currentDate');
+  const toastContainer = $('#toastContainer');
+  const notificationsToggle = $('#notificationsToggle');
+  const reminderTimeSelect = $('#reminderTimeSelect');
+
+  // ============ HELPERS ============
+  function parseDateTime(dateStr, timeStr) {
+    if (!dateStr || !timeStr) return null;
+    const [h, m] = timeStr.split(':').map(Number);
+    const d = new Date(dateStr + 'T00:00:00');
+    d.setHours(h, m, 0, 0);
+    return d;
+  }
+
+  function formatDateShort(date) {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const target = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const diff = Math.round((target - today) / 86400000);
+    
+    if (diff === 0) return 'Heute';
+    if (diff === 1) return 'Morgen';
+    if (diff === -1) return 'Gestern';
+    if (diff < 7 && diff > 0) {
+      return ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'][target.getDay()];
+    }
+    return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' });
+  }
+
+  function formatTime(date) {
+    return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function getMonthShort(date) {
+    return ['JAN','FEB','MÄR','APR','MAI','JUN','JUL','AUG','SEP','OKT','NOV','DEZ'][date.getMonth()];
+  }
+
+  function getCountdown(date) {
+    const diff = date - new Date();
+    if (diff <= 0) return { text: 'Jetzt', urgent: true };
+    
+    const totalMin = Math.floor(diff / 60000);
+    const days = Math.floor(totalMin / 1440);
+    const hours = Math.floor((totalMin % 1440) / 60);
+    const mins = totalMin % 60;
+    
+    if (days > 0) return { text: `Noch ${days} Tag${days>1?'e':''}`, urgent: days <= 1 };
+    if (hours > 0) return { text: `Noch ${hours} Std. ${mins} Min.`, urgent: hours <= 3 };
+    return { text: `Noch ${mins} Min.`, urgent: true };
+  }
+
+  function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  }
+
+  // ============ STORAGE ============
+  function saveData() {
+    const data = appointments.map(a => ({
+      id: a.id,
+      title: a.title,
+      dateStr: a.dateStr,
+      timeStr: a.timeStr,
+      dateObj: a.dateObj.toISOString()
+    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function loadData() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      try {
+        const data = JSON.parse(raw);
+        appointments = data.map(d => ({
+          id: d.id,
+          title: d.title,
+          dateStr: d.dateStr,
+          timeStr: d.timeStr,
+          dateObj: new Date(d.dateObj)
+        }));
+      } catch(e) {
+        appointments = [];
+      }
+    }
+    
+    if (appointments.length === 0) {
+      const now = new Date();
+      const today = now.toISOString().split('T')[0];
+      const tomorrow = new Date(now.getTime() + 86400000).toISOString().split('T')[0];
+      const friday = new Date(now);
+      friday.setDate(friday.getDate() + ((5 - friday.getDay() + 7) % 7) || 7);
+      const fridayStr = friday.toISOString().split('T')[0];
+      
+      appointments = [
+        { id: generateId(), title: 'Zahnarzt', dateStr: today, timeStr: '15:00', dateObj: parseDateTime(today, '15:00') },
+        { id: generateId(), title: 'Team-Meeting', dateStr: tomorrow, timeStr: '09:30', dateObj: parseDateTime(tomorrow, '09:30') },
+        { id: generateId(), title: 'Abendessen', dateStr: fridayStr, timeStr: '19:00', dateObj: parseDateTime(fridayStr, '19:00') }
+      ].filter(a => a.dateObj && a.dateObj > new Date());
+    }
+    
+    appointments.sort((a, b) => a.dateObj - b.dateObj);
+    saveData();
+  }
+
+  // ============ RENDER ============
+  function renderNextCard() {
+    const upcoming = appointments.filter(a => a.dateObj > new Date());
+    const next = upcoming[0];
+    
+    if (next) {
+      const cd = getCountdown(next.dateObj);
+      nextCard.innerHTML = `
+        <span class="next-badge">📌 ${formatDateShort(next.dateObj)}</span>
+        <div class="next-time">${formatTime(next.dateObj)}</div>
+        <div class="next-title">${escapeHtml(next.title)}</div>
+        <div class="countdown">
+          <span class="countdown-dot"></span>
+          ${cd.text}
+        </div>
+      `;
+    } else {
+      nextCard.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📭</div>
+          <div class="empty-title">Keine Termine</div>
+          <div class="empty-subtitle">Füge deinen ersten Termin hinzu</div>
+        </div>
+      `;
+    }
+  }
+
+  function renderList() {
+    const upcoming = appointments.filter(a => a.dateObj > new Date());
+    appointmentCount.textContent = upcoming.length;
+    
+    if (upcoming.length === 0) {
+      appointmentList.innerHTML = `
+        <div style="text-align:center;padding:24px;color:#8e8e93;">
+          <span style="font-size:40px;">📋</span>
+          <p style="margin-top:8px;font-weight:500;">Noch keine anstehenden Termine</p>
+        </div>
+      `;
+      return;
+    }
+    
+    appointmentList.innerHTML = upcoming.map(a => `
+      <div class="list-item" data-id="${a.id}">
+        <div class="list-date-box">
+          <span class="list-day">${a.dateObj.getDate()}</span>
+          <span class="list-month">${getMonthShort(a.dateObj)}</span>
+        </div>
+        <div class="list-info">
+          <div class="list-time">${formatTime(a.dateObj)}</div>
+          <div class="list-title">${escapeHtml(a.title)}</div>
+        </div>
+        <div class="list-actions">
+          <button class="list-btn delete" data-action="delete" data-id="${a.id}" aria-label="Löschen">🗑️</button>
+        </div>
+      </div>
+    `).join('');
+    
+    // Event Delegation für Löschen
+    appointmentList.querySelectorAll('[data-action="delete"]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.dataset.id;
+        deleteAppointment(id);
+      });
+    });
+  }
+
+  function refreshUI() {
+    renderNextCard();
+    renderList();
+    updateCurrentDate();
+  }
+
+  function updateCurrentDate() {
+    const now = new Date();
+    currentDateEl.textContent = now.toLocaleDateString('de-DE', { 
+      weekday: 'short', day: 'numeric', month: 'short' 
+    });
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // ============ ACTIONS ============
+  function addAppointment() {
+    const title = titleInput.value.trim();
+    const dateStr = dateInput.value;
+    const timeStr = timeInput.value;
+    
+    if (!title) { showToast('⚠️ Bitte Titel eingeben'); return; }
+    if (!dateStr) { showToast('⚠️ Bitte Datum wählen'); return; }
+    if (!timeStr) { showToast('⚠️ Bitte Uhrzeit wählen'); return; }
+    
+    const dateObj = parseDateTime(dateStr, timeStr);
+    if (!dateObj || isNaN(dateObj)) { showToast('⚠️ Ungültiges Datum'); return; }
+    
+    if (dateObj <= new Date()) {
+      showToast('⚠️ Termin liegt in der Vergangenheit');
+      return;
+    }
+    
+    const newAppointment = {
+      id: generateId(),
+      title,
+      dateStr,
+      timeStr,
+      dateObj
+    };
+    
+    appointments.push(newAppointment);
+    appointments.sort((a, b) => a.dateObj - b.dateObj);
+    saveData();
+    refreshUI();
+    closeAddModal();
+    scheduleReminder(newAppointment);
+    showToast('✅ Termin gespeichert');
+  }
+
+  function deleteAppointment(id) {
+    if (!confirm('Diesen Termin wirklich löschen?')) return;
+    appointments = appointments.filter(a => a.id !== id);
+    appointments.sort((a, b) => a.dateObj - b.dateObj);
+    saveData();
+    refreshUI();
+    clearReminder(id);
+    showToast('🗑️ Termin gelöscht');
+  }
+
+  function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    toastContainer.appendChild(toast);
+    setTimeout(() => toast.remove(), 2200);
+  }
+
+  // ============ REMINDERS ============
+  function scheduleReminder(appointment) {
+    clearReminder(appointment.id);
+    
+    if (!notificationsToggle.checked) return;
+    
+    const reminderHours = parseFloat(reminderTimeSelect.value);
+    const reminderTime = new Date(appointment.dateObj.getTime() - reminderHours * 3600000);
+    const now = new Date();
+    
+    if (reminderTime > now) {
+      const timeout = reminderTime - now;
+      const timeoutId = setTimeout(() => {
+        sendNotification(appointment);
+      }, timeout);
+      
+      reminderTimeouts.push({ id: appointment.id, timeoutId });
+    }
+  }
+
+  function clearReminder(id) {
+    const entry = reminderTimeouts.find(r => r.id === id);
+    if (entry) {
+      clearTimeout(entry.timeoutId);
+      reminderTimeouts = reminderTimeouts.filter(r => r.id !== id);
+    }
+  }
+
+  function sendNotification(appointment) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('🔔 Nächster Termin', {
+        body: `${formatDateShort(appointment.dateObj)} · ${formatTime(appointment.dateObj)} Uhr\n${appointment.title}`,
+        tag: appointment.id,
+        requireInteraction: true,
+        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%231a1a1a"/><text x="50" y="65" font-size="55" text-anchor="middle" fill="%230a84ff">📅</text></svg>'
+      });
+    }
+  }
+
+  function requestNotificationPermission() {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }
+
+  function scheduleAllReminders() {
+    reminderTimeouts.forEach(r => clearTimeout(r.timeoutId));
+    reminderTimeouts = [];
+    appointments.forEach(a => {
+      if (a.dateObj > new Date()) scheduleReminder(a);
+    });
+  }
+
+  // ============ MODAL ============
+  function openAddModal() {
+    const now = new Date();
+    dateInput.value = now.toISOString().split('T')[0];
+    timeInput.value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    titleInput.value = '';
+    addModal.classList.add('active');
+    setTimeout(() => titleInput.focus(), 300);
+  }
+
+  function closeAddModal() {
+    addModal.classList.remove('active');
+  }
+
+  // ============ NAVIGATION ============
+  function setView(view) {
+    $$('.nav-item').forEach(n => n.classList.remove('active'));
+    
+    if (view === 'home') {
+      homeView.classList.remove('hidden');
+      settingsView.classList.add('hidden');
+      document.querySelector('[data-view="home"]').classList.add('active');
+    } else if (view === 'settings') {
+      homeView.classList.add('hidden');
+      settingsView.classList.remove('hidden');
+      document.querySelector('[data-view="settings"]').classList.add('active');
+    }
+  }
+
+  function loadSettings() {
+    const notifEnabled = localStorage.getItem('nt_notifications') !== 'false';
+    notificationsToggle.checked = notifEnabled;
+    
+    const remTime = localStorage.getItem('nt_reminderTime') || '24';
+    reminderTimeSelect.value = remTime;
+  }
+
+  function saveSettings() {
+    localStorage.setItem('nt_notifications', notificationsToggle.checked);
+    localStorage.setItem('nt_reminderTime', reminderTimeSelect.value);
+  }
+
+  // ============ EVENT LISTENERS ============
+  $('#openAddModal').addEventListener('click', openAddModal);
+  $('#closeModal').addEventListener('click', closeAddModal);
+  $('#saveBtn').addEventListener('click', addAppointment);
+  
+  addModal.addEventListener('click', (e) => {
+    if (e.target === addModal) closeAddModal();
+  });
+
+  // Navigation
+  $$('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const view = btn.dataset.view;
+      if (view === 'add') {
+        setView('home');
+        openAddModal();
+      } else {
+        setView(view);
+      }
+    });
+  });
+
+  // Settings
+  notificationsToggle.addEventListener('change', () => {
+    saveSettings();
+    scheduleAllReminders();
+  });
+  
+  reminderTimeSelect.addEventListener('change', () => {
+    saveSettings();
+    scheduleAllReminders();
+  });
+
+  // Keyboard
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAddModal();
+  });
+
+  // ============ INIT ============
+  function init() {
+    loadData();
+    loadSettings();
+    refreshUI();
+    requestNotificationPermission();
+    scheduleAllReminders();
+    
+    // Auto-refresh countdown
+    setInterval(() => {
+      renderNextCard();
+    }, 60000);
+    
+    // Aktualisiere Datum um Mitternacht
+    const now = new Date();
+    const msToMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) - now;
+    setTimeout(() => {
+      refreshUI();
+      setInterval(refreshUI, 86400000);
+    }, msToMidnight + 1000);
+  }
+
+  init();
+  
+  console.log('✅ Nächster Termin App gestartet');
+  console.log('📱 Bereit für App Store Einreichung via PWA Builder');
+})();
+</script>
+</body>
+</html>
