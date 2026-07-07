@@ -66,11 +66,25 @@
       gap: 20px;
     }
 
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
     .header-title {
       font-size: 32px;
       font-weight: 800;
       color: #ffffff;
-      margin-top: 10px;
+    }
+
+    .settings-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
     }
 
     .next-card {
@@ -254,6 +268,8 @@
       max-width: 430px;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
       animation: slideUp 0.3s ease;
+      max-height: 85vh;
+      overflow-y: auto;
     }
 
     @keyframes slideUp {
@@ -345,6 +361,83 @@
       cursor: pointer;
     }
 
+    .settings-card {
+      background: #252525;
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 12px;
+    }
+
+    .settings-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .settings-label {
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .settings-desc {
+      font-size: 12px;
+      color: #98989d;
+      margin-top: 4px;
+    }
+
+    .toggle {
+      position: relative;
+      width: 51px;
+      height: 31px;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: #3a3a3c;
+      border-radius: 31px;
+      transition: 0.3s;
+    }
+
+    .toggle-slider::before {
+      content: "";
+      position: absolute;
+      height: 27px;
+      width: 27px;
+      left: 2px;
+      bottom: 2px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    input:checked + .toggle-slider {
+      background: #0a84ff;
+    }
+
+    input:checked + .toggle-slider::before {
+      transform: translateX(20px);
+    }
+
+    .select-input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 16px;
+      background: #1a1a1a;
+      color: #ffffff;
+      margin-top: 8px;
+    }
+
     .hidden {
       display: none !important;
     }
@@ -362,6 +455,7 @@
       font-size: 14px;
       z-index: 200;
       animation: toastIn 2s ease;
+      white-space: nowrap;
     }
 
     @keyframes toastIn {
@@ -374,8 +468,13 @@
 </head>
 <body>
 <div class="app" id="app">
-  <div class="main-content" id="homeView">
-    <h1 class="header-title">Nächster Termin</h1>
+  
+  <!-- Termine View -->
+  <div class="main-content" id="termineView">
+    <div class="header-row">
+      <h1 class="header-title">Nächster Termin</h1>
+      <button class="settings-btn" id="openSettings">⚙️</button>
+    </div>
 
     <div class="next-card" id="nextCard"></div>
 
@@ -387,6 +486,48 @@
     <button class="add-button" id="openAddModal">＋ Termin hinzufügen</button>
   </div>
 
+  <!-- Einstellungen View -->
+  <div class="main-content hidden" id="settingsView">
+    <div class="header-row">
+      <h1 class="header-title">Einstellungen</h1>
+      <button class="settings-btn" id="closeSettings">✕</button>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-row">
+        <div>
+          <div class="settings-label">🔔 Benachrichtigungen</div>
+          <div class="settings-desc">Erinnerungen vor Terminen</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="notificationsToggle" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-label">⏰ Erinnerungszeit</div>
+      <select class="select-input" id="reminderTimeSelect">
+        <option value="24">24 Stunden vorher</option>
+        <option value="12">12 Stunden vorher</option>
+        <option value="6">6 Stunden vorher</option>
+        <option value="3">3 Stunden vorher</option>
+        <option value="1">1 Stunde vorher</option>
+        <option value="0.5">30 Minuten vorher</option>
+      </select>
+      <div class="settings-desc" style="margin-top:8px;">Standard: 24 Stunden vor dem Termin</div>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-label">📱 App-Info</div>
+      <div class="settings-desc">Version 2.0 • Nächster Termin</div>
+      <div class="settings-desc">🔔 Sperrbildschirm-Benachrichtigungen</div>
+      <div class="settings-desc">💾 Lokale Speicherung</div>
+    </div>
+  </div>
+
+  <!-- Modal Termin hinzufügen -->
   <div class="modal-overlay" id="addModal">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
@@ -412,8 +553,10 @@
     </div>
   </div>
 
+  <!-- Toast Container -->
   <div id="toastContainer"></div>
 
+  <!-- Navigation -->
   <nav class="bottom-nav">
     <button class="nav-item active" id="navTermine">
       <span class="nav-icon">📅</span>
@@ -423,262 +566,370 @@
       <span class="nav-icon">➕</span>
       <span>Neu</span>
     </button>
+    <button class="nav-item" id="navSettings">
+      <span class="nav-icon">⚙️</span>
+      <span>Einstellungen</span>
+    </button>
   </nav>
 </div>
 
 <script>
-console.log('🚀 App startet...');
-
-// Daten
-let appointments = [];
-
-// DOM Elemente
-const homeView = document.getElementById('homeView');
-const nextCard = document.getElementById('nextCard');
-const appointmentList = document.getElementById('appointmentList');
-const addModal = document.getElementById('addModal');
-const titleInput = document.getElementById('titleInput');
-const dateInput = document.getElementById('dateInput');
-const timeInput = document.getElementById('timeInput');
-const toastContainer = document.getElementById('toastContainer');
-
-// Test
-console.log('✅ DOM geladen');
-console.log('📅 addModal:', addModal);
-console.log('🔘 openAddModal:', document.getElementById('openAddModal'));
-console.log('💾 saveBtn:', document.getElementById('saveBtn'));
-
-// Hilfsfunktionen
-function parseDateTime(dateStr, timeStr) {
-  if (!dateStr || !timeStr) return null;
-  const [h, m] = timeStr.split(':').map(Number);
-  const d = new Date(dateStr + 'T00:00:00');
-  d.setHours(h, m, 0, 0);
-  return d;
-}
-
-function formatDateShort(date) {
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const target = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const diff = Math.round((target - today) / 86400000);
+(function() {
+  'use strict';
   
-  if (diff === 0) return 'Heute';
-  if (diff === 1) return 'Morgen';
-  if (diff === -1) return 'Gestern';
-  return ['So','Mo','Di','Mi','Do','Fr','Sa'][target.getDay()];
-}
+  console.log('🚀 App startet...');
 
-function formatTime(date) {
-  return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-}
+  // ============ DATEN ============
+  let appointments = [];
+  let reminderTimeouts = [];
+  const STORAGE_KEY = 'termine_app_v2';
 
-function getMonthShort(date) {
-  return ['JAN','FEB','MÄR','APR','MAI','JUN','JUL','AUG','SEP','OKT','NOV','DEZ'][date.getMonth()];
-}
+  // ============ DOM ELEMENTE ============
+  const termineView = document.getElementById('termineView');
+  const settingsView = document.getElementById('settingsView');
+  const nextCard = document.getElementById('nextCard');
+  const appointmentList = document.getElementById('appointmentList');
+  const addModal = document.getElementById('addModal');
+  const titleInput = document.getElementById('titleInput');
+  const dateInput = document.getElementById('dateInput');
+  const timeInput = document.getElementById('timeInput');
+  const toastContainer = document.getElementById('toastContainer');
+  const notificationsToggle = document.getElementById('notificationsToggle');
+  const reminderTimeSelect = document.getElementById('reminderTimeSelect');
 
-function getCountdown(date) {
-  const diff = date - new Date();
-  if (diff <= 0) return 'Jetzt';
-  const hours = Math.floor(diff / 3600000);
-  const mins = Math.floor((diff % 3600000) / 60000);
-  if (hours >= 24) return `Noch ${Math.floor(hours/24)} Tage`;
-  if (hours > 0) return `Noch ${hours} Std. ${mins} Min.`;
-  return `Noch ${mins} Min.`;
-}
+  // ============ HILFSFUNKTIONEN ============
+  function parseDateTime(dateStr, timeStr) {
+    if (!dateStr || !timeStr) return null;
+    const [h, m] = timeStr.split(':').map(Number);
+    const d = new Date(dateStr + 'T00:00:00');
+    d.setHours(h, m, 0, 0);
+    return d;
+  }
 
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
+  function formatDateShort(date) {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const target = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const diff = Math.round((target - today) / 86400000);
+    if (diff === 0) return 'Heute';
+    if (diff === 1) return 'Morgen';
+    if (diff === -1) return 'Gestern';
+    return ['So','Mo','Di','Mi','Do','Fr','Sa'][target.getDay()];
+  }
 
-// Speichern
-function saveData() {
-  localStorage.setItem('termine_app', JSON.stringify(appointments.map(a => ({
-    id: a.id,
-    title: a.title,
-    dateStr: a.dateStr,
-    timeStr: a.timeStr,
-    dateObj: a.dateObj.toISOString()
-  }))));
-}
+  function formatTime(date) {
+    return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  }
 
-function loadData() {
-  const raw = localStorage.getItem('termine_app');
-  if (raw) {
-    try {
-      appointments = JSON.parse(raw).map(d => ({
-        id: d.id,
-        title: d.title,
-        dateStr: d.dateStr,
-        timeStr: d.timeStr,
-        dateObj: new Date(d.dateObj)
-      }));
-    } catch(e) {
-      appointments = [];
+  function getMonthShort(date) {
+    return ['JAN','FEB','MÄR','APR','MAI','JUN','JUL','AUG','SEP','OKT','NOV','DEZ'][date.getMonth()];
+  }
+
+  function getCountdown(date) {
+    const diff = date - new Date();
+    if (diff <= 0) return 'Jetzt';
+    const hours = Math.floor(diff / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    if (hours >= 24) return `Noch ${Math.floor(hours/24)} Tage`;
+    if (hours > 0) return `Noch ${hours} Std. ${mins} Min.`;
+    return `Noch ${mins} Min.`;
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // ============ BENACHRICHTIGUNGEN ============
+  function requestNotificationPermission() {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().then(perm => {
+        console.log('🔔 Benachrichtigung:', perm);
+        if (perm === 'granted') {
+          showToast('🔔 Benachrichtigungen aktiv');
+        }
+      });
     }
   }
-  
-  if (appointments.length === 0) {
-    const now = new Date();
-    const today = now.toISOString().split('T')[0];
-    const tomorrow = new Date(now.getTime() + 86400000).toISOString().split('T')[0];
+
+  function sendNotification(appointment) {
+    if (!notificationsToggle.checked) return;
+    if ('Notification' in window && Notification.permission === 'granted') {
+      const notification = new Notification('🔔 Nächster Termin', {
+        body: `${formatDateShort(appointment.dateObj)} · ${formatTime(appointment.dateObj)} Uhr\n${appointment.title}`,
+        icon: 'icon-192.png',
+        badge: 'icon-192.png',
+        tag: appointment.id,
+        requireInteraction: true,
+        vibrate: [200, 100, 200],
+        silent: false
+      });
+      
+      notification.onclick = function() {
+        window.focus();
+        this.close();
+      };
+      
+      console.log('✅ Benachrichtigung gesendet:', appointment.title);
+    }
+  }
+
+  function scheduleReminder(appointment) {
+    clearReminder(appointment.id);
     
-    appointments = [
-      { id: '1', title: 'Zahnarzt', dateStr: today, timeStr: '15:00', dateObj: parseDateTime(today, '15:00') },
-      { id: '2', title: 'Meeting', dateStr: tomorrow, timeStr: '09:30', dateObj: parseDateTime(tomorrow, '09:30') }
-    ].filter(a => a.dateObj && a.dateObj > new Date());
+    if (!notificationsToggle.checked) return;
+    
+    const reminderHours = parseFloat(reminderTimeSelect.value);
+    const reminderTime = new Date(appointment.dateObj.getTime() - reminderHours * 3600000);
+    const now = new Date();
+    const delay = reminderTime - now;
+    
+    if (delay > 0) {
+      const timeoutId = setTimeout(() => {
+        sendNotification(appointment);
+      }, delay);
+      
+      reminderTimeouts.push({ id: appointment.id, timeoutId });
+      console.log(`⏰ Erinnerung geplant: ${appointment.title} in ${Math.round(delay/3600000)} Stunden`);
+    }
   }
-  
-  appointments.sort((a, b) => a.dateObj - b.dateObj);
-  saveData();
-}
 
-// Rendern
-function renderNextCard() {
-  const upcoming = appointments.filter(a => a.dateObj > new Date());
-  const next = upcoming[0];
-  
-  if (next) {
-    nextCard.innerHTML = `
-      <span class="next-badge">📌 ${formatDateShort(next.dateObj)}</span>
-      <div class="next-time">${formatTime(next.dateObj)}</div>
-      <div class="next-title">${escapeHtml(next.title)}</div>
-      <div class="countdown">⏱ ${getCountdown(next.dateObj)}</div>
-    `;
-  } else {
-    nextCard.innerHTML = `<p style="color:#98989d;text-align:center;padding:20px;">Keine bevorstehenden Termine</p>`;
+  function clearReminder(id) {
+    const entry = reminderTimeouts.find(r => r.id === id);
+    if (entry) {
+      clearTimeout(entry.timeoutId);
+      reminderTimeouts = reminderTimeouts.filter(r => r.id !== id);
+    }
   }
-}
 
-function renderList() {
-  const upcoming = appointments.filter(a => a.dateObj > new Date());
-  
-  if (upcoming.length === 0) {
-    appointmentList.innerHTML = '<p style="color:#98989d;text-align:center;padding:20px;">Keine anstehenden Termine</p>';
-    return;
-  }
-  
-  appointmentList.innerHTML = upcoming.map(a => `
-    <div class="list-item">
-      <div class="list-date-box">
-        <div class="list-day">${a.dateObj.getDate()}</div>
-        <div class="list-month">${getMonthShort(a.dateObj)}</div>
-      </div>
-      <div class="list-info">
-        <div class="list-time">${formatTime(a.dateObj)}</div>
-        <div class="list-title">${escapeHtml(a.title)}</div>
-      </div>
-      <button class="list-delete" data-id="${a.id}">🗑️</button>
-    </div>
-  `).join('');
-  
-  document.querySelectorAll('.list-delete').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (confirm('Termin löschen?')) {
-        appointments = appointments.filter(a => a.id !== this.dataset.id);
-        saveData();
-        refreshUI();
-        showToast('🗑️ Gelöscht');
-      }
+  function scheduleAllReminders() {
+    reminderTimeouts.forEach(r => clearTimeout(r.timeoutId));
+    reminderTimeouts = [];
+    appointments.forEach(a => {
+      if (a.dateObj > new Date()) scheduleReminder(a);
     });
-  });
-}
-
-function refreshUI() {
-  renderNextCard();
-  renderList();
-}
-
-function showToast(msg) {
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = msg;
-  toastContainer.appendChild(t);
-  setTimeout(() => t.remove(), 2000);
-}
-
-// Modal
-function openModal() {
-  console.log('📂 openModal aufgerufen');
-  const now = new Date();
-  dateInput.value = now.toISOString().split('T')[0];
-  timeInput.value = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
-  titleInput.value = '';
-  addModal.classList.add('active');
-  console.log('✅ Modal geöffnet');
-}
-
-function closeModal() {
-  addModal.classList.remove('active');
-}
-
-function addAppointment() {
-  const title = titleInput.value.trim();
-  const dateStr = dateInput.value;
-  const timeStr = timeInput.value;
-  
-  if (!title) { showToast('⚠️ Titel eingeben'); return; }
-  if (!dateStr) { showToast('⚠️ Datum wählen'); return; }
-  if (!timeStr) { showToast('⚠️ Uhrzeit wählen'); return; }
-  
-  const dateObj = parseDateTime(dateStr, timeStr);
-  if (!dateObj || dateObj <= new Date()) {
-    showToast('⚠️ Termin in der Vergangenheit');
-    return;
   }
+
+  // ============ SPEICHERN ============
+  function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appointments.map(a => ({
+      id: a.id,
+      title: a.title,
+      dateStr: a.dateStr,
+      timeStr: a.timeStr,
+      dateObj: a.dateObj.toISOString()
+    }))));
+  }
+
+  function loadData() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      try {
+        appointments = JSON.parse(raw).map(d => ({
+          id: d.id,
+          title: d.title,
+          dateStr: d.dateStr,
+          timeStr: d.timeStr,
+          dateObj: new Date(d.dateObj)
+        }));
+      } catch(e) {
+        appointments = [];
+      }
+    }
+    
+    if (appointments.length === 0) {
+      const now = new Date();
+      const today = now.toISOString().split('T')[0];
+      const tomorrow = new Date(now.getTime() + 86400000).toISOString().split('T')[0];
+      
+      appointments = [
+        { id: 'demo1', title: 'Zahnarzt', dateStr: today, timeStr: '15:00', dateObj: parseDateTime(today, '15:00') },
+        { id: 'demo2', title: 'Meeting', dateStr: tomorrow, timeStr: '09:30', dateObj: parseDateTime(tomorrow, '09:30') }
+      ].filter(a => a.dateObj && a.dateObj > new Date());
+    }
+    
+    appointments.sort((a, b) => a.dateObj - b.dateObj);
+    saveData();
+  }
+
+  function loadSettings() {
+    const notif = localStorage.getItem('nt_notif_v2');
+    if (notif !== null) notificationsToggle.checked = (notif === 'true');
+    const remTime = localStorage.getItem('nt_reminder_v2');
+    if (remTime) reminderTimeSelect.value = remTime;
+  }
+
+  function saveSettings() {
+    localStorage.setItem('nt_notif_v2', notificationsToggle.checked);
+    localStorage.setItem('nt_reminder_v2', reminderTimeSelect.value);
+  }
+
+  // ============ UI RENDERN ============
+  function renderNextCard() {
+    const upcoming = appointments.filter(a => a.dateObj > new Date());
+    const next = upcoming[0];
+    
+    if (next) {
+      nextCard.innerHTML = `
+        <span class="next-badge">📌 ${formatDateShort(next.dateObj)}</span>
+        <div class="next-time">${formatTime(next.dateObj)}</div>
+        <div class="next-title">${escapeHtml(next.title)}</div>
+        <div class="countdown">⏱ ${getCountdown(next.dateObj)}</div>
+      `;
+    } else {
+      nextCard.innerHTML = `<p style="color:#98989d;text-align:center;padding:20px;">Keine bevorstehenden Termine</p>`;
+    }
+  }
+
+  function renderList() {
+    const upcoming = appointments.filter(a => a.dateObj > new Date());
+    
+    if (upcoming.length === 0) {
+      appointmentList.innerHTML = '<p style="color:#98989d;text-align:center;padding:20px;">Keine anstehenden Termine</p>';
+      return;
+    }
+    
+    appointmentList.innerHTML = upcoming.map(a => `
+      <div class="list-item">
+        <div class="list-date-box">
+          <div class="list-day">${a.dateObj.getDate()}</div>
+          <div class="list-month">${getMonthShort(a.dateObj)}</div>
+        </div>
+        <div class="list-info">
+          <div class="list-time">${formatTime(a.dateObj)}</div>
+          <div class="list-title">${escapeHtml(a.title)}</div>
+        </div>
+        <button class="list-delete" data-id="${a.id}">🗑️</button>
+      </div>
+    `).join('');
+    
+    document.querySelectorAll('.list-delete').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (confirm('Termin löschen?')) {
+          const id = this.dataset.id;
+          appointments = appointments.filter(a => a.id !== id);
+          saveData();
+          refreshUI();
+          clearReminder(id);
+          showToast('🗑️ Gelöscht');
+        }
+      });
+    });
+  }
+
+  function refreshUI() {
+    renderNextCard();
+    renderList();
+  }
+
+  function showToast(msg) {
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    toastContainer.appendChild(t);
+    setTimeout(() => t.remove(), 2000);
+  }
+
+  // ============ MODAL ============
+  function openModal() {
+    const now = new Date();
+    dateInput.value = now.toISOString().split('T')[0];
+    timeInput.value = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    titleInput.value = '';
+    addModal.classList.add('active');
+  }
+
+  function closeModal() {
+    addModal.classList.remove('active');
+  }
+
+  function addAppointment() {
+    const title = titleInput.value.trim();
+    const dateStr = dateInput.value;
+    const timeStr = timeInput.value;
+    
+    if (!title) { showToast('⚠️ Titel eingeben'); return; }
+    if (!dateStr) { showToast('⚠️ Datum wählen'); return; }
+    if (!timeStr) { showToast('⚠️ Uhrzeit wählen'); return; }
+    
+    const dateObj = parseDateTime(dateStr, timeStr);
+    if (!dateObj || dateObj <= new Date()) {
+      showToast('⚠️ Termin in Vergangenheit');
+      return;
+    }
+    
+    const newApp = {
+      id: Date.now().toString(),
+      title, dateStr, timeStr, dateObj
+    };
+    
+    appointments.push(newApp);
+    appointments.sort((a, b) => a.dateObj - b.dateObj);
+    saveData();
+    refreshUI();
+    closeModal();
+    scheduleReminder(newApp);
+    showToast('✅ Gespeichert');
+  }
+
+  // ============ NAVIGATION ============
+  function showTermine() {
+    termineView.classList.remove('hidden');
+    settingsView.classList.add('hidden');
+    document.getElementById('navTermine').classList.add('active');
+    document.getElementById('navSettings').classList.remove('active');
+  }
+
+  function showSettings() {
+    termineView.classList.add('hidden');
+    settingsView.classList.remove('hidden');
+    document.getElementById('navTermine').classList.remove('active');
+    document.getElementById('navSettings').classList.add('active');
+  }
+
+  // ============ EVENT LISTENER ============
+  document.getElementById('openAddModal').addEventListener('click', openModal);
+  document.getElementById('navNeu').addEventListener('click', openModal);
+  document.getElementById('saveBtn').addEventListener('click', addAppointment);
+  document.getElementById('closeModal').addEventListener('click', closeModal);
+  document.getElementById('navTermine').addEventListener('click', showTermine);
   
-  appointments.push({
-    id: Date.now().toString(),
-    title, dateStr, timeStr, dateObj
+  document.getElementById('openSettings').addEventListener('click', showSettings);
+  document.getElementById('closeSettings').addEventListener('click', showTermine);
+  document.getElementById('navSettings').addEventListener('click', showSettings);
+  
+  addModal.addEventListener('click', function(e) {
+    if (e.target === addModal) closeModal();
   });
   
-  appointments.sort((a, b) => a.dateObj - b.dateObj);
-  saveData();
+  notificationsToggle.addEventListener('change', function() {
+    saveSettings();
+    scheduleAllReminders();
+  });
+  
+  reminderTimeSelect.addEventListener('change', function() {
+    saveSettings();
+    scheduleAllReminders();
+  });
+
+  // ============ START ============
+  loadData();
+  loadSettings();
   refreshUI();
-  closeModal();
-  showToast('✅ Gespeichert');
-}
-
-// Event Listener
-console.log('🔧 Registriere Events...');
-
-document.getElementById('openAddModal').addEventListener('click', function() {
-  console.log('🟢 Button geklickt!');
-  openModal();
-});
-
-document.getElementById('navNeu').addEventListener('click', function() {
-  console.log('🟢 Nav-Neu geklickt!');
-  openModal();
-});
-
-document.getElementById('saveBtn').addEventListener('click', function() {
-  console.log('🟢 Speichern geklickt!');
-  addAppointment();
-});
-
-document.getElementById('closeModal').addEventListener('click', function() {
-  console.log('🟢 Abbrechen geklickt!');
-  closeModal();
-});
-
-document.getElementById('navTermine').addEventListener('click', function() {
-  closeModal();
-});
-
-addModal.addEventListener('click', function(e) {
-  if (e.target === addModal) closeModal();
-});
-
-console.log('✅ Alle Events registriert');
-
-// Start
-loadData();
-refreshUI();
-console.log('🎉 App fertig geladen');
+  scheduleAllReminders();
+  requestNotificationPermission();
+  
+  // Countdown alle 60 Sekunden aktualisieren
+  setInterval(() => {
+    renderNextCard();
+  }, 60000);
+  
+  console.log('🎉 App bereit mit Benachrichtigungen!');
+  console.log('🔔 Berechtigung:', Notification.permission);
+  console.log('📅 Termine:', appointments.length);
+})();
 </script>
 </body>
 </html>
